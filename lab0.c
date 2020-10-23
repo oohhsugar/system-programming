@@ -4,22 +4,22 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-int main(int argc, char *argv[]) //задаю переменные типа int
+int main(int argc, char *argv[])
 {
-pid_t pid; //уникальный идентификатор задаёт pid, process id
-int rv; //задаю переменную
-switch(pid=fork()) { //switch перебирает кейсы, порождается новый процесс (процесс-потомок), который почти идентичен порождающему прцессу-родителю
+pid_t pid;
+int rv; 
+switch(pid=fork()) {
 case -1:
-perror("fork"); //ошибка, perror интерпретирует значение гобальной переменной ERRNO в строку и выводит эту строку
-exit(1); //обычно укзывает на неудачное завершение работы, закрывает программу
-case 0:
-printf(" CHILD: Это процесс - потомок!\n"); //выводит сообщение
-execvp (argv[1], &argv[1]); //функции создают и попрождают новый процесс
+perror("fork");
 exit(1);
-default: //выражение выполнится, когда ни одно из значение не будет соответствовать значению
+case 0:
+printf(" CHILD: Это процесс - потомок!\n"); 
+execvp (argv[1], &argv[1]); 
+exit(1);
+default:
 printf("PARENT: Это процесс-родитель!\n");
-wait(&rv); //функция wait() ждёт завершения первого из всех возможных потомков родительского процесса
-printf("EXITCODE = %d\n", WEXITSTATUS(rv)); //представляет собой макрос, который плуыает фактический код возврата потомка и вызова wait()
+wait(&rv);
+printf("EXITCODE = %d\n", WEXITSTATUS(rv));
 }
 return(0);
 }
