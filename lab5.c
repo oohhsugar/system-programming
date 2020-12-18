@@ -30,7 +30,7 @@ char ch;
 ssize_t ret;
 while (ret = read(fd[0], &ch, 1) >= 0)
 {
-printf("%c",toupper(ch)); //принимает данные из трубы
+printf("%c",toupper(ch));
 fflush(stdout);
 }
 if(ret == -1)
@@ -45,7 +45,7 @@ break;
 default:
 printf("Input process started\n");
 //close(myPipe[0]);
-printf("Input process pipe end:%d\n", fd[1]); //отправляет данные в трубу
+printf("Input process pipe end:%d\n", fd[1]); 
 char str[] = "aaaaaaaaaaAaaaaaaaa";
 write(fd[1],str,strlen(str));
 sleep(3);
