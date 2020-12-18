@@ -1,58 +1,53 @@
-define _CRT_SECURE_NO_WARNINGS
-#define _CRT_RAND_S
-#include <pthread.h>
-#include <stdio.h>
-#include <semaphore.h>
+#include <fcntl.h> 
+#include <stdio.h> 
+#include <semaphore.h> 
+#include <pthread.h> 
 
 
-sem_t semaphore1;
-sem_t semaphore2;
- 
-static int counter = 0;
-  
-void* worker1(void* args) {
-	 int i;
-    int local;
-    for (i = 0; i < 10; i++) {
-        sem_wait(&semaphore1);
-        local = counter;
-        printf("worker1 - %d\n", local);
-        local++;
-        counter = local;
-        Sleep(10);
-        sem_post(&semaphore2);
-    }
-}
- 
-void* worker2(void* args) {
-    int i;
-    int local;
-    for (i = 0; i < 10; i++) {
-        sem_wait(&semaphore2);
-        local = counter;
-        printf("worker 2 - %d\n", local);
-        local--;
-        counter = local;
-        Sleep(10);
-        sem_post(&semaphore1);
-}
- 
-void main() {
-    pthread_t thread1;
-    pthread_t thread2;
-  
- 
-    sem_open(&semaphore1, 0, 0);
-    sem_open(&semaphore2, 0, 0);
-     
-    pthread_create(&thread1, NULL, worker1, NULL);
-    pthread_create(&thread2, NULL, worker2, NULL);
+FILE *f; 
+sem_t *semaphore1; 
+sem_t *semaphore2; 
 
- 
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
- 
-    sem_destroy(&semaphore1);
-    sem_destroy(&semaphore2);
-    wait();
+void* th1(void* args) { 
+int i, sum1 = 0; 
+for (i = 0; i < 20; i++) { 
+sem_wait(semaphore2); 
+f = fopen("txt.txt", "a"); 
+sum1 += 2; 
+fprintf(f, "Шаг %d суммы = %d \n", i, sum1); 
+fclose(f); 
+sem_post(semaphore1); 
+} 
+} 
+
+void* th2(void* args) { 
+int i, sum2 = 0; 
+for (i = 0; i < 20; i++) { 
+sem_wait(semaphore1); 
+f = fopen("txt.txt", "a"); 
+sum2 += 10; 
+fprintf(f, "Шаг %d разности = %d \n", i, sum2); 
+fclose(f); 
+sem_post(semaphore2); 
+} 
+} 
+
+int main() { 
+
+f = fopen("txt.txt", "w"); 
+pthread_t thread1; 
+pthread_t thread2; 
+
+semaphore1 = sem_open("/first_sem", O_CREAT, S_IWUSR, 0); 
+semaphore2 = sem_open("/second_sem", O_CREAT, S_IWUSR, 1); 
+
+pthread_create(&thread1, NULL, th1, NULL); 
+pthread_create(&thread2, NULL, th2, NULL); 
+
+pthread_join(thread1, NULL); 
+pthread_join(thread2, NULL); 
+
+sem_unlink("/first_sem"); 
+sem_unlink("/second_sem"); 
+return 0; 
 }
