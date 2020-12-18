@@ -40,16 +40,14 @@ exit(1);
 }
 break;
 
-///////////////////////////////////////
-
 default:
 printf("Input process started\n");
 //close(myPipe[0]);
 printf("Input process pipe end:%d\n", fd[1]); 
-char str[] = "aaaaaaaaaaAaaaaaaaa";
+char str[] = "AAA";
 write(fd[1],str,strlen(str));
 sleep(3);
-strcpy(str,"_bbbBbb");
+strcpy(str,"_BBB");
 write(fd[1],str,strlen(str));
 break;
 }
